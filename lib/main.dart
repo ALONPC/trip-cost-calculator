@@ -20,6 +20,7 @@ class FuelForm extends StatefulWidget {
 
 class _FuelFormState extends State<FuelForm> {
   String result = "";
+  final double _formDistance = 5.0;
   final _currencies = [
     'Dollars',
     'Euro',
@@ -43,72 +44,113 @@ class _FuelFormState extends State<FuelForm> {
           padding: EdgeInsets.all(15.0),
           child: Column(
             children: <Widget>[
-              TextField(
-                controller:
-                    distanceController, // when we use the controller appreach instead of the onChanged, this is super important in order to let the textInput know the link between the result value and the submit button
-                decoration: InputDecoration(
-                    hintText: "e.g. 124",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0)),
-                    labelText: 'Distance',
-                    labelStyle: textStyle),
-                keyboardType: TextInputType
-                    .number, // type of the keyboard this input will use
-                // onChanged: (String string) {
-                //   setState(() => result = string);
-                // }
-              ),
-              TextField(
-                controller: avgController,
-                decoration: InputDecoration(
-                    hintText: "e.g. 17",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0)),
-                    labelText: 'Distance per unit',
-                    labelStyle: textStyle),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: priceController,
-                decoration: InputDecoration(
-                    hintText: "e.g. 1.65",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0)),
-                    labelText: 'Price',
-                    labelStyle: textStyle),
-                keyboardType: TextInputType.number,
-              ),
-              DropdownButton<String>(
-                // its a dropdown widget that receives an array of strings
-                items: _currencies.map((String value) {
-                  // iterates over the currencies array
-                  return DropdownMenuItem<String>(
-                      // returns an item for each value in the array
-                      value: value,
-                      child: Text(value));
-                }).toList(),
-                value: _currency,
-                onChanged: (String value) {
-                  // super important in order to change the value of the dropdown
-                  _onDropdownChanged(value);
-                },
-              ),
-              RaisedButton(
-                  color: Theme.of(context).primaryColorDark,
-                  textColor: Theme.of(context).primaryColorLight,
-                  onPressed: () {
-                    setState(() {
-                      result = _calculate();
-                    });
-                  },
-                  child: Text(
-                    'Submit',
-                    textScaleFactor: 1.5, // makes the text 50% bigger
+              Padding(
+                  padding: EdgeInsets.only(
+                      top: _formDistance, bottom: _formDistance),
+                  child: TextField(
+                    controller:
+                        distanceController, // when we use the controller appreach instead of the onChanged, this is super important in order to let the textInput know the link between the result value and the submit button
+                    decoration: InputDecoration(
+                        hintText: "e.g. 124",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)),
+                        labelText: 'Distance',
+                        labelStyle: textStyle),
+                    keyboardType: TextInputType
+                        .number, // type of the keyboard this input will use
+                    // onChanged: (String string) {
+                    //   setState(() => result = string);
+                    // }
                   )),
+              Padding(
+                  padding: EdgeInsets.only(
+                      top: _formDistance, bottom: _formDistance),
+                  child: TextField(
+                    controller: avgController,
+                    decoration: InputDecoration(
+                        hintText: "e.g. 17",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)),
+                        labelText: 'Distance per unit',
+                        labelStyle: textStyle),
+                    keyboardType: TextInputType.number,
+                  )),
+              Padding(
+                  padding: EdgeInsets.only(
+                      top: _formDistance, bottom: _formDistance),
+                  child: Row(children: <Widget>[
+                    Expanded(
+                        // use expanded widget to make the child widget 'feel' all the available space
+                        child: TextField(
+                      controller: priceController,
+                      decoration: InputDecoration(
+                          hintText: "e.g. 1.65",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0)),
+                          labelText: 'Price',
+                          labelStyle: textStyle),
+                      keyboardType: TextInputType.number,
+                    )),
+                    Container(width: _formDistance * 5),
+                    Expanded(
+                      child: DropdownButton<String>(
+                        // its a dropdown widget that receives an array of strings
+                        items: _currencies.map((String value) {
+                          // iterates over the currencies array
+                          return DropdownMenuItem<String>(
+                              // returns an item for each value in the array
+                              value: value,
+                              child: Text(value));
+                        }).toList(),
+                        value: _currency,
+                        onChanged: (String value) {
+                          // super important in order to change the value of the dropdown
+                          _onDropdownChanged(value);
+                        },
+                      ),
+                    )
+                  ])),
+              Row(children: <Widget>[
+                Expanded(
+                    child: RaisedButton(
+                        color: Theme.of(context).primaryColorDark,
+                        textColor: Theme.of(context).primaryColorLight,
+                        onPressed: () {
+                          setState(() {
+                            result = _calculate();
+                          });
+                        },
+                        child: Text(
+                          'Submit',
+                          textScaleFactor: 1.5, // makes the text 50% bigger
+                        ))),
+                Expanded(
+                    child: RaisedButton(
+                        color: Theme.of(context).buttonColor,
+                        textColor: Theme.of(context).primaryColorDark,
+                        onPressed: () {
+                          setState(() {
+                            _reset();
+                          });
+                        },
+                        child: Text(
+                          'Reset',
+                          textScaleFactor: 1.5, // makes the text 50% bigger
+                        ))),
+              ]),
               Text(result)
             ],
           ),
         ));
+  }
+
+  void _reset() {
+    distanceController.text = '';
+    avgController.text = '';
+    priceController.text = '';
+    setState(() {
+      result = '';
+    });
   }
 
   void _onDropdownChanged(String value) {
